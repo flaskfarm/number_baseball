@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript">
+  hideMenuModule();
+</script>
+<div>
+  <h3>숫자 야구 설정</h3>
+  {{ macros.setting_input_int('question_len', '내가 맞출 숫자 자리수', value=4) }}
+  {{ macros.setting_input_int('answer_len', '상대방이 맞출 숫자 자리수', value=3) }}
+  {{ macros.m_hr_black() }}
+  {{ macros.m_button_group([['start_btn', '시작']])}}
+  {{ macros.m_hr_black() }}
+
+  <h3>내가 맞출 숫자</h3>
+  {{ macros.setting_input_int('question1', '내가 물어본 숫자') }}
+  {{ macros.setting_input_int('question2', '상대방이 답변한 스트라이크', value='0') }}
+  {{ macros.setting_input_int('question3', '상대방이 답변한 볼', value='0') }}
+  {{ macros.setting_button([['input_question_btn', '입력']])}}
+  <div id="question_div"></div>
+  {{ macros.m_hr_black() }}
+
+  <h3>상대방이 맞출 숫자</h3>
+  {{ macros.setting_input_int('answer1', '상대방이 물어본 숫자') }}
+  {{ macros.setting_buttons([['input_answer_btn', '입력'], ['show_answer_btn', '정답 보기']])}}
+  <div id="answer_div"></div>
+  {{ macros.m_hr_black() }}
+</div> <!--전체-->
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+  var socket = io.connect(window.location.href);
+  socket.on('status', function(data) {
+    make_data(data);
+  });
+});
+
+
+$("body").on('click', '#start_btn', function(e){
+  e.preventDefault();
+  globalSendCommand('start', parseInt($('#question_len').val()), parseInt($('#answer_len').val()));
+});
+
+$("body").on('click', '#input_question_btn', function(e){
+  e.preventDefault();
+  let question_len = parseInt($('#question_len').val());
+  let answer_len = parseInt($('#answer_len').val());
+  q1 = $('#question1').val();
+  if (q1.length != question_len) {
+    notify("설정된 자리수와 다릅니다.<br>설정 자리수 : " + question_len + '<br>입력 자리수 : ' + q1.length, 'danger');
+    return;
+  }
+  globalSendCommand('input_question', q1, $('#question2').val(), $('#question3').val());
+});
+
+
+$("body").on('click', '#input_answer_btn', function(e){
+  e.preventDefault();
+  let answer_len = parseInt($('#answer_len').val());
+  a1 = $('#answer1').val();
+  if (a1.length != answer_len) {
+    notify("설정된 자리수와 다릅니다.<br>설정 자리수 : " + answer_len + '<br>입력 자리수 : ' + a1.length, 'danger');
+    return;
+  }
+  globalSendCommand('input_answser', a1);
+});
+
+
+$("body").on('click', '#show_answer_btn', function(e){
+  e.preventDefault();
+  notify("정답 : " + current_data.answer, 'success');
+});
+
+
+$("body").on('click', '#show_btn', function(e){
+  e.preventDefault();
+  tmp = $(this).data('id').split('_');
+  if (tmp[0] == 'question') {
+    m_modal(current_data.question_data[parseInt(tmp[1])][3], "가능 숫자", false);
+  } else {
+    m_modal(current_data.answer_data[parseInt(tmp[1])][3], "가능 숫자", false);
+  }
+});
+
+
+$("body").on('click', '#info_btn', function(e){
+  e.preventDefault();
+  tmp = $(this).data('id').split('_');
+  if (tmp[0] == 'question') {
+    data = current_data.question_data[parseInt(tmp[1])][4];
+  } else {
+    data = current_data.answer_data[parseInt(tmp[1])][4];
+  }
+  str = '';
+  for (i in data) {
+    str += (parseInt(i) + 1) + "번째 : " + data[i] + "</br>";
+  }
+  m_modal(str, "자리별", false);
+});
+
+$("body").on('click', '#remove_btn', function(e){
+  e.preventDefault();
+  tmp = $(this).data('id').split('_');
+  globalSendCommand('remove_data', tmp[0], tmp[1]);
+});
+
+
+function make_data(data) {
+  current_data = data;
+  str = make_table(data.question_data, 'question');
+  $("#question_div").html(str);
+
+  str = make_table(data.answer_data, 'answer');
+  $("#answer_div").html(str);
+}
+
+function make_table(data, mode)
+{
+  str = "<div class='row'><div class='col-sm-3 set-left'><strong>목록</strong></div><div class='col-sm-9'><div style='padding-left:20px; padding-top:-5px;'>";
+
+  str += '<table id="result_table" class="table table-sm  tableRowHover "  ><thead class="thead-dark"><tr> \
+    <th style="width:10%;text-align:center;">NO</th> \
+    <th style="width:15%;text-align:center;">물어본 숫자</th> \
+    <th style="width:10%;text-align:center;">스트라이크</th> \
+    <th style="width:10%;text-align:center;">볼</th> \
+    <th style="width:15%;text-align:center;">가능한 숫자 수</th> \
+    <th style="width:40%;text-align:center;">Action</th> \
+    </tr></thead><tbody id="list">';
+  if (data.length == 0) {
+    str += '<tr><td colspan="6"><h4>시작전</h4></td></tr>'; 
+  } else
+  {
+    for(i in data) {
+      str += '<tr class="chover" style="cursor: pointer;" data-toggle="collapse" data-target="#collapse_' + i + '" aria-expanded="true" >';
+      str += '<td scope="col" style="width:10%; text-align:center;">'+ (parseInt(i)+1) + '</td>';
+      str += '<td scope="col" style="width:15%; text-align:center;">' + data[i][0] + '</td>';
+      str += '<td scope="col" style="width:10%; text-align:center;">' + data[i][1] + '</td>';
+      str += '<td scope="col" style="width:10%; text-align:center;">' + data[i][2] + '</td>';
+      str += '<td scope="col" style="width:15%; text-align:center;">' + data[i][3].length + '개' + '</td>';
+      buttons = '<input type="button" id="remove_btn" value="삭제" class="btn btn-sm btn-danger py-0" style="font-size: 0.8em;" data-id="'+(mode + '_' + i)+'"><span style="margin-left:10px">';
+      buttons += '<input type="button" id="show_btn" value="가능 숫자보기" class="btn btn-sm btn-warning py-0" style="font-size: 0.8em;" data-id="'+(mode + '_' + i)+'"><span style="margin-left:10px">';
+      buttons += '<input type="button" id="info_btn" value="자리별" class="btn btn-sm btn-info py-0" style="font-size: 0.8em;" data-id="'+(mode + '_' + i)+'"><span style="margin-left:10px">';
+      str += '<td scope="col" style="width:40%; text-align:left;">' + buttons + '</td>';
+      str += '</tr>';
+    }
+  }
+  str += '</tbody></table>';
+  str += '</div></div></div>'
+  return str;
+}
+  
+
+
+
+
+</script>    
+{% endblock %}

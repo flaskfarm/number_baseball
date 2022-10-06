@@ -1,0 +1,13 @@
+title: "숫자 야구"
+version: "1.0.0.0"
+package_name: "number_baseball"
+developer: "TEAM"
+description': "숫자 야구 - 샘플 플러그인"
+home: "https://github.com/flaskfarm/number_baseball"
+more: "https://raw.githubusercontent.com/flaskfarm/number_baseball/main/README.md"
+
+require_plugin: ""
+require_os' : ""
+need_decrypt_code: false
+need_filesize_check': false
+filesize: 0
