@@ -1,5 +1,5 @@
 title: "숫자 야구"
-version: "1.0.0.0"
+version: "1.0.0"
 package_name: "number_baseball"
 developer: "FlaskFarm"
 description: "숫자 야구 - 샘플 플러그인"
