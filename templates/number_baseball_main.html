@@ -1,32 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
-<script type="text/javascript">
-  hideMenuModule();
-</script>
-<div>
-  <h3>숫자 야구 설정</h3>
-  {{ macros.setting_input_int('question_len', '내가 맞출 숫자 자리수', value=4) }}
-  {{ macros.setting_input_int('answer_len', '상대방이 맞출 숫자 자리수', value=3) }}
-  {{ macros.m_hr_black() }}
-  {{ macros.m_button_group([['start_btn', '시작']])}}
-  {{ macros.m_hr_black() }}
 
-  <h3>내가 맞출 숫자</h3>
-  {{ macros.setting_input_int('question1', '내가 물어본 숫자') }}
-  {{ macros.setting_input_int('question2', '상대방이 답변한 스트라이크', value='0') }}
-  {{ macros.setting_input_int('question3', '상대방이 답변한 볼', value='0') }}
-  {{ macros.setting_buttons([['input_question_btn', '입력']])}}
-  <div id="question_div"></div>
-  {{ macros.m_hr_black() }}
+<h3>숫자 야구 설정</h3>
+{{ macros.setting_input_int('question_len', '내가 맞출 숫자 자리수', value=4) }}
+{{ macros.setting_input_int('answer_len', '상대방이 맞출 숫자 자리수', value=3) }}
+{{ macros.m_hr_black() }}
+{{ macros.m_button_group([['start_btn', '시작']])}}
+{{ macros.m_hr_black() }}
 
-  <h3>상대방이 맞출 숫자</h3>
-  {{ macros.setting_input_int('answer1', '상대방이 물어본 숫자') }}
-  {{ macros.setting_buttons([['input_answer_btn', '입력'], ['show_answer_btn', '정답 보기']])}}
-  <div id="answer_div"></div>
-  {{ macros.m_hr_black() }}
-</div> <!--전체-->
+<h3>내가 맞출 숫자</h3>
+{{ macros.setting_input_int('question1', '내가 물어본 숫자') }}
+{{ macros.setting_input_int('question2', '상대방이 답변한 스트라이크', value='0') }}
+{{ macros.setting_input_int('question3', '상대방이 답변한 볼', value='0') }}
+{{ macros.setting_buttons([['input_question_btn', '입력']])}}
+<div id="question_div"></div>
+{{ macros.m_hr_black() }}
+
+<h3>상대방이 맞출 숫자</h3>
+{{ macros.setting_input_int('answer1', '상대방이 물어본 숫자') }}
+{{ macros.setting_buttons([['input_answer_btn', '입력'], ['show_answer_btn', '정답 보기']])}}
+<div id="answer_div"></div>
+{{ macros.m_hr_black() }}
+
 
 <script type="text/javascript">
+hideMenuModule();
 
 $(document).ready(function(){
   var socket = io.connect(window.location.href);

@@ -1,4 +1,5 @@
 from .setup import *
+
 name = 'main'
 
 class ModuleMain(PluginModuleBase):
@@ -43,9 +44,10 @@ class ModuleMain(PluginModuleBase):
 
 
 
-from random import randint
 import copy
 import math
+from random import randint
+
 
 class NumberBaseball:
 
@@ -141,13 +143,11 @@ class NumberBaseball:
         ret = []
         start_number = int(math.pow(10, (length-1)))
         last_number = int(math.pow(10, length)-1)
-        
 
         for i in range(start_number, last_number):
             if self.check_only_one(str(i)):
                 if self.available(str(i), data):
                     ret.append(i)
-
         return ret
 
 
