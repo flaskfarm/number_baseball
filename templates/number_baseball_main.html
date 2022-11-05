@@ -74,9 +74,9 @@ $("body").on('click', '#show_btn', function(e){
   e.preventDefault();
   tmp = $(this).data('id').split('_');
   if (tmp[0] == 'question') {
-    m_modal(current_data.question_data[parseInt(tmp[1])][3], "가능 숫자", false);
+    showModal(current_data.question_data[parseInt(tmp[1])][3], "가능 숫자", false);
   } else {
-    m_modal(current_data.answer_data[parseInt(tmp[1])][3], "가능 숫자", false);
+    showModal(current_data.answer_data[parseInt(tmp[1])][3], "가능 숫자", false);
   }
 });
 
@@ -93,7 +93,7 @@ $("body").on('click', '#info_btn', function(e){
   for (i in data) {
     str += (parseInt(i) + 1) + "번째 : " + data[i] + "</br>";
   }
-  m_modal(str, "자리별", false);
+  showModal(str, "자리별", false);
 });
 
 $("body").on('click', '#remove_btn', function(e){
